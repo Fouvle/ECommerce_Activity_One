@@ -45,6 +45,7 @@ class Customer extends db_connection
         }
     }
 
+    // create a new customer
     public function createUser($name, $email, $password, $phone_number, $role)
     {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
@@ -64,4 +65,50 @@ class Customer extends db_connection
         return $stmt->get_result()->fetch_assoc();
     }
 
+    //add customer
+    public function addUser($name, $email, $password, $phone_number, $role)
+    {
+        return $this->createUser($name, $email, $password, $phone_number, $role);
+    }
+
+    // edit customer details
+    public function editUser($name, $email, $phone_number)
+    {
+        if (!$this->customer_id) {
+            return false;
+        }
+        $stmt = $this->db->prepare("UPDATE customer SET customer_name = ?, customer_email = ?, customer_contact = ? WHERE customer_id = ?");
+        $stmt->bind_param("sssi", $name, $email, $phone_number, $this->customer_id);
+        return $stmt->execute();
+    }
+
+    // change customer password
+    public function changePassword($old_password, $new_password)
+    {
+        if (!$this->customer_id) {
+            return false;
+        }
+        $user = $this->getUserByEmail($this->email);
+        if ($user && password_verify($old_password, $user['customer_pass'])) {
+            $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+            $stmt = $this->db->prepare("UPDATE customer SET customer_pass = ? WHERE customer_id = ?");
+            $stmt->bind_param("si", $hashed_password, $this->customer_id);
+            return $stmt->execute();
+        }
+        return false;
+    }
+
+    // delete customer
+    public function deleteUser()
+    {
+        if (!$this->customer_id) {
+            return false;
+        }
+        $stmt = $this->db->prepare("DELETE FROM customer WHERE customer_id = ?");
+        $stmt->bind_param("i", $this->customer_id);
+        return $stmt->execute();
+    }
+
+    
 }
+?>

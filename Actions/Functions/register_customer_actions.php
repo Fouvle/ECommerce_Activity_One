@@ -29,3 +29,5 @@ if ($customer_id) {
     $response['message'] = 'Failed to register';
 }
 echo json_encode($response);
+exit();
+?>
