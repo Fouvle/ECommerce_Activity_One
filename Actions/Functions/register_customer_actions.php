@@ -17,7 +17,7 @@ $name = $_POST['name'];
 $email = $_POST['email'];
 $password = $_POST['password'];
 $phone_number = $_POST['phone_number'];
-$role = 'customer';
+$role = $_POST['role'];
 
 $customer_id = register_customer_ctr($name, $email, $password, $phone_number, $role);
 if ($customer_id) {
